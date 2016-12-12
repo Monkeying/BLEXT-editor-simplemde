@@ -8,14 +8,14 @@ var simplemde = new SimpleMDE({
     },
     element: $("#editor")[0],
     
-    initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\n<summary>\n<!-- more -->',
+    initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
     toolbar: [
     	{
 			name: "custom",
 	        action: function customFunction(editor){
 	            // Add your own code
 	        },
-	        className: "fa fa-cogs",
+	        className: "fa fa-cogs js-open-bottom-slidebar",
 	        title: "Custom Button",
     	},
     	'|',
