@@ -7,7 +7,8 @@ var simplemde = new SimpleMDE({
         delay: 1000,
     },
     element: $("#editor")[0],
-    initialValue: 'BLOG FORMAT',
+    
+    initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\n<summary>\n<!-- more -->',
     toolbar: [
     	{
 			name: "custom",
