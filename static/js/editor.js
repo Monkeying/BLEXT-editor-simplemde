@@ -8,14 +8,14 @@ var simplemde = new SimpleMDE({
     },
     element: $("#editor")[0],
     
-    initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\n<summary>\n<!-- more -->',
+    initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
     toolbar: [
     	{
 			name: "custom",
 	        action: function customFunction(editor){
 	            // Add your own code
 	        },
-	        className: "fa fa-cogs",
+	        className: "fa fa-cogs js-open-bottom-slidebar",
 	        title: "Custom Button",
     	},
     	'|',
@@ -38,20 +38,20 @@ var simplemde = new SimpleMDE({
     	'side-by-side',
     	'|',
     	{
-    		name: "custom",
+    		name: "save",
             action: function customFunction(editor){
                 // Save draft
             },
-            className: "fa fa-star",
-            title: "Custom Button",
+            className: "fa fa-save",
+            title: "Save as draft",
     	},
     	{
     		name: "custom",
             action: function customFunction(editor){
                 // Publish
             },
-            className: "fa fa-star",
-            title: "Custom Button",
+            className: "fa fa-paper-plane",
+            title: "Publish",
     	}
     ]
 });

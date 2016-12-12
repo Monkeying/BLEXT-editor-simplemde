@@ -104,7 +104,7 @@
 			// Toggle.
 				if (skel.vars.IEVersion > 9) {
 
-					$('a.fa-cogs')
+					$('.fa-cogs')
 						.on('click', function(event) {
 
 							// Prevent default.
