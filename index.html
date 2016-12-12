@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html>
 
@@ -5,76 +6,23 @@
     <title>BLEXT editor</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-    <link rel="stylesheet" href="static/css/main.css" />
     <link rel="stylesheet" href="static/css/simplemde.min.css" />
-    <!--[if lte IE 9]><link rel="stylesheet" href="static/css/ie9.css" /><![endif]-->
-    <!--[if lte IE 8]><link rel="stylesheet" href="static/css/ie8.css" /><![endif]-->
+    <link rel="stylesheet" href="static/css/main.css" />
 </head>
 
 <body>
-    <!-- Wrapper -->
-    <div id="wrapper">
-        <!-- Main -->
-        <div id="main">
-            <textarea name="editor" id="editor"></textarea>
-        </div>
+    <textarea name="editor" id="editor"></textarea>
+    <div class="template">
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="inner">
-                <!-- Search -->
-                <section id="search" class="alt">
-                    <form method="post" action="#">
-                        <input type="text" name="query" id="query" placeholder="Search" />
-                    </form>
-                </section>
                 <!-- Menu -->
                 <nav id="menu">
                     <header class="major">
                         <h2>Menu</h2>
                     </header>
-					<ul class="panel-group" id="accordion">
-						<li class="panel panel-default">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a data-toggle="collapse" data-parent="#accordion" 
-									   href="#collapseOne">
-										点击我进行展开，再次点击我进行折叠。第 1 部分
-									</a>
-								</h4>
-							</div>
-							<div id="collapseOne" class="panel-collapse collapse in">
-								<div class="panel-body">
-									Nihil anim keffiyeh helvetica, craft beer labore wes anderson 
-									cred nesciunt sapiente ea proident. Ad vegan excepteur butcher 
-									vice lomo.
-								</div>
-							</div>
-						</li>
-						<li class="panel panel-default">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a data-toggle="collapse" data-parent="#accordion" 
-									   href="#collapseTwo">
-										点击我进行展开，再次点击我进行折叠。第 2 部分
-									</a>
-								</h4>
-							</div>
-							<div id="collapseTwo" class="panel-collapse collapse">
-								<div class="panel-body">
-									Nihil anim keffiyeh helvetica, craft beer labore wes anderson 
-									cred nesciunt sapiente ea proident. Ad vegan excepteur butcher 
-									vice lomo.
-								</div>
-							</div>
-						</li>
-					</ul>
-					<!--
                     <ul>
-                        <li><a href="#" onclick="userValidate()" data-toggle="collapse">Homepage</a></li>
-							<div href="#" id="blogList" class="sidebar-collapse collapse">
-							
-							</div>
+                        <li><a href="#">Homepage</a></li>
                         <li><a href="#">Generic</a></li>
                         <li><a href="#">Elements</a></li>
                         <li>
@@ -87,19 +35,17 @@
                             </ul>
                         </li>
                     </ul>
-					-->
                 </nav>
             </div>
         </div>
     </div>
     <!-- Scripts -->
     <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/editor.js"></script>
+    <!-- Editorial -->
     <script src="static/js/skel.min.js"></script>
     <script src="static/js/util.js"></script>
-    <!--[if lte IE 8]><script src="static/js/ie/respond.min.js"></script><![endif]-->
     <script src="static/js/main.js"></script>
-    <script src="static/js/editor.js"></script>
-	<script src="index.js"></script>
 </body>
 
 </html>
