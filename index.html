@@ -6,13 +6,45 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="static/css/simplemde.min.css" />
+    <link rel="stylesheet" href="static/css/main.css" />
 </head>
 
 <body>
     <textarea name="editor" id="editor"></textarea>
+    <div class="template">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <div class="inner">
+                <!-- Menu -->
+                <nav id="menu">
+                    <header class="major">
+                        <h2>Menu</h2>
+                    </header>
+                    <ul>
+                        <li><a href="#">Homepage</a></li>
+                        <li><a href="#">Generic</a></li>
+                        <li><a href="#">Elements</a></li>
+                        <li>
+                            <span class="opener">Submenu</span>
+                            <ul>
+                                <li><a href="#">Lorem Dolor</a></li>
+                                <li><a href="#">Ipsum Adipiscing</a></li>
+                                <li><a href="#">Tempus Magna</a></li>
+                                <li><a href="#">Feugiat Veroeros</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
     <!-- Scripts -->
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/editor.js"></script>
+    <!-- Editorial -->
+    <script src="static/js/skel.min.js"></script>
+    <script src="static/js/util.js"></script>
+    <script src="static/js/main.js"></script>
 </body>
 
 </html>

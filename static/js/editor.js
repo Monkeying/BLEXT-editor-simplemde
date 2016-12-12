@@ -38,20 +38,20 @@ var simplemde = new SimpleMDE({
     	'side-by-side',
     	'|',
     	{
-    		name: "custom",
+    		name: "save",
             action: function customFunction(editor){
                 // Save draft
             },
-            className: "fa fa-star",
-            title: "Custom Button",
+            className: "fa fa-save",
+            title: "Save as draft",
     	},
     	{
     		name: "custom",
             action: function customFunction(editor){
                 // Publish
             },
-            className: "fa fa-star",
-            title: "Custom Button",
+            className: "fa fa-paper-plane",
+            title: "Publish",
     	}
     ]
 });
