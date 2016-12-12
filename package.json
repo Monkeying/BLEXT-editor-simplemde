@@ -1,0 +1,22 @@
+{
+  "name": "BLEXT-editor",
+  "version": "1.0.0",
+  "description": "BLEXT supporting markdown editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/seagullbird/BLEXT-editor.git",
+  "keywords": [
+    "markdown",
+    "editor",
+    "Election",
+    "BLEXT"
+  ],
+  "author": "seagullbird, Monkeying",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^1.4.1",
+    "simplemde": "^1.11.2"
+  }
+}
