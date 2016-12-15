@@ -22,6 +22,7 @@
 			$head = $('head'),
 			$body = $('body');
 
+			$window.id = "mainWindow";
 		// Disable animations/transitions ...
 
 			// ... until the page has loaded.
@@ -139,9 +140,10 @@
 						// Check URL.
 							if (!href || href == '#' || href == '')
 								return;
-
+						/*
 						// Hide sidebar.
 							$sidebar.addClass('inactive');
+						*/
 
 						// Redirect to href.
 							setTimeout(function() {
@@ -152,9 +154,8 @@
 									window.location.href = href;
 
 							}, 500);
-
 					});
-
+				
 				// Prevent certain events inside the panel from bubbling.
 					$sidebar.on('click touchend touchstart touchmove', function(event) {
 
@@ -278,6 +279,34 @@
 					});
 
 				});
+		// HomePage.
+			var $HomePage = $('#HomePage'),
+				$HomePage_openers = $HomePage.children('ul').find('.opener');
+
+			// Openers.
+				$HomePage_openers.each(function() {
+
+					var $this = $(this);
+
+					$this.on('click', function(event) {
+
+						// Prevent default.
+							event.preventDefault();
+
+						// Toggle.
+							alert("here"+$this.tagName);
+							$menu_openers.removeClass('active');
+							$this.parent().addClass('active');
+							$HomePage_openers.not($this).removeClass('active');
+							$this.toggleClass('active');
+
+						// Trigger resize (sidebar lock).
+							$window.triggerHandler('resize.sidebar-lock');
+
+					});
+
+				});
+			
 
 	});
 
