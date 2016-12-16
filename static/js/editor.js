@@ -1,4 +1,8 @@
 var SimpleMDE = require('simplemde');
+const electron = require('electron');
+var shell = electron.shell;
+const {dialog} = require('electron').remote
+console.log(dialog)
 var simplemde = new SimpleMDE({ 
 	autofocus: true,
     autosave: {
@@ -24,6 +28,7 @@ var simplemde = new SimpleMDE({
 			action: function setFormat(){
 				var format = '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->';
 				simplemde.value(format);
+				current_url = null;
 			},
 			className: "fa fa-file-o",
 			title: "Reset Format"
@@ -90,11 +95,15 @@ var simplemde = new SimpleMDE({
 				console.log("enterPublishing");
 				//var url_publish = "http://10.201.14.174:5000/api/v1.0/blogs/";
 				var url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
+				
 				var request = {
 					body: simplemde.value(),
 					draft: false
-				}
-				request_json = JSON.stringify(request); 
+				};
+				var request_json = JSON.stringify(request); 
+				if (window.confirm("Publish as a draft?"))
+					request_json.draft = "true";
+				alert(request_json.draft);
 				$.ajax({
 					type:'POST',
 					data: request_json,
@@ -120,7 +129,47 @@ var simplemde = new SimpleMDE({
             },
             className: "fa fa-paper-plane",
             title: "Publish",
-    	}
+    	},
+    	{
+    		name: "custom",
+            action: function customFunction(editor){
+				//写入本地文件
+				var fs = require('fs');
+				var _path = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+				if (_path == undefined)
+					return false;
+				_path += "\\record.txt";
+				//shell.showItemInFolder(path1);
+				fs.readFile(_path[0], 'utf8', function (err, data) {
+					if (err) return console.log(err);
+				});
+
+				fs.writeFile(_path, simplemde.value(), function (err) {
+				if (!err)
+				  console.log("写入成功！");
+				})				
+            },
+            className: "fa fa-folder",
+            title: "Save on local",
+    	},	
+    	{
+    		name: "custom",
+            action: function customFunction(editor){
+				//本地文件读入
+				var fs = require('fs');
+				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
+				if (_path == undefined)
+					return false;
+				//shell.showItemInFolder(path1);
+				fs.readFile(_path[0], 'utf8', function (err, data) {
+					if (err) return console.log(err);
+					simplemde.value(data);
+				});
+	
+            },
+            className: "fa fa-folder-open-o",
+            title: "Read from local",
+    	}		
     ]
 });
 simplemde.toggleFullScreen();

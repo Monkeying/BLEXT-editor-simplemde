@@ -254,7 +254,9 @@
 						.trigger('resize.sidebar-lock');
 
 					});
-
+		
+		
+		
 		// Menu.
 			var $menu = $('#menu'),
 				$menu_openers = $menu.children('ul').find('.opener');
@@ -265,49 +267,21 @@
 					var $this = $(this);
 
 					$this.on('click', function(event) {
+							// Prevent default.
+								event.preventDefault();
 
-						// Prevent default.
-							event.preventDefault();
+							// Toggle.
+								$menu_openers.not($this).removeClass('active');
+								$this.toggleClass('active');
 
-						// Toggle.
-							$menu_openers.not($this).removeClass('active');
-							$this.toggleClass('active');
-
-						// Trigger resize (sidebar lock).
-							$window.triggerHandler('resize.sidebar-lock');
-
-					});
-
-				});
-		// HomePage.
-			var $HomePage = $('#HomePage'),
-				$HomePage_openers = $HomePage.children('ul').find('.opener');
-
-			// Openers.
-				$HomePage_openers.each(function() {
-
-					var $this = $(this);
-
-					$this.on('click', function(event) {
-
-						// Prevent default.
-							event.preventDefault();
-
-						// Toggle.
-							alert("here"+$this.tagName);
-							$menu_openers.removeClass('active');
-							$this.parent().addClass('active');
-							$HomePage_openers.not($this).removeClass('active');
-							$this.toggleClass('active');
-
-						// Trigger resize (sidebar lock).
-							$window.triggerHandler('resize.sidebar-lock');
+							// Trigger resize (sidebar lock).
+								$window.triggerHandler('resize.sidebar-lock');	
 
 					});
 
 				});
+
 			
-
 	});
 
 })(jQuery);

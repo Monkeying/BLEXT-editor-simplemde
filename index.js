@@ -1,17 +1,32 @@
-var BlogsParsed;
 var userInfo;
-function userValidate()
+var current_url = null;
+var Blogs = null;
+function HomePage(token){//token was grobaly defined in index.html
+	if (token == null)//未认证，即第一次登陆时
+	{
+		alert("Please Login First.");
+		var LoginHtml = "<li style='text-align:center'>Email:<input type='email' id='userEmail' placeholder='Enter email'> </li>";
+		LoginHtml += "<li style='text-align:center'>Password:<input type='password' id='userPassword' placeholder='Password'></li>";
+		LoginHtml += "<li align='center'><button type='button' onclick='userValidate()'>Sign in</button></li>";//click this button will lead to function userValidate
+		document.getElementById('Login').innerHTML = LoginHtml;
+	}
+	else
+	{
+		return true;
+	}
+}
+function userValidate()//To get a token
 {
 	console.log("enter userValidate");
 	{	
-		if ( document.getElementById("userEmail").value == null)
+		if ( document.getElementById("userEmail").value == "")
 		{
-			alert("Please enter Email!")
+			alert("Please enter Email!");
 			return true;
 		}
-		else if ( document.getElementById("userPassword").value == null)
+		else if ( document.getElementById("userPassword").value == "")
 		{
-			alert("Please enter Email!")
+			alert("Please enter Password!");
 			return true;	
 		}
 
@@ -19,7 +34,7 @@ function userValidate()
 		$.ajax({
 			//async:false,
 			beforeSend:function(){
-				document.getElementById("userForm").innerHTML = "waiting for validation";
+				document.getElementById("Login").innerHTML = "<li>waiting for validation</li><li align='center' class='fa fa-spinner fa-pulse' ></li>";
 			},
 			xhrFields:{
 				withCredentials:true
@@ -34,6 +49,11 @@ function userValidate()
 			dataType:"JSON",/*translate message get from sever into object */
 			success:function(data){
 				token = data.token;
+				//document.getElementById('Login').style.display = 'none';
+				document.getElementById('Blog_List').style.display = '';
+				document.getElementById('Draft_List').style.display = '';
+				document.getElementById('Tag_List').style.display = '';
+				document.getElementById('Category_List').style.display = '';
 			},
 			error:function(){
 				token = null;
@@ -54,32 +74,27 @@ function getUserInfoList(){
 		userInfo = getMessage("https://blext.herokuapp.com/api/v1.0/user/");
 		var Avatar_url = userInfo.avatar_url;
 		var Blog_count = userInfo.blog_count;
-		var Blogs = getMessage( userInfo.blogs );
-		var Categories = getMessage( userInfo.categories );
-		var Tags = getMessage( userInfo.tags );
 		var Url = userInfo.url;
-		var username = userInfo.name;
+		var username = userInfo.username;
 		
-		BlogsParsed = JSON.parse(JSON.stringify(Blogs));
-		var i = 0;
-		var BlogsList = "<li><span class='opener' href='#'>BlogList</span><ul id='blogList'>";
-		for (i = 0; i < Blog_count; i++)
-		{
-			console.log(BlogsParsed.blogs[i].title);//the way to select blogs in Blogs is BlogsParsed.blogs[i].key, the later the former
-			BlogsList += ("<li><a href='#' onclick='simplemde.value( JSON.stringify( getMessage(BlogsParsed.blogs[" + i + "].url) ) )'>" + BlogsParsed.blogs[i].title + "</a></li>" );
-		}
-		BlogsList += "</ul></li>";
-		document.getElementById("userForm").innerHTML = BlogsList;//this will cover the form Login imformation innerHTML by function HomePage
+		document.getElementById("Login").innerHTML = "<li>User: " + username + "</li><li>Blog_count: " + Blog_count + "</li><li><a href='index.html' >Logout</a></li>";
 		
-		var TagList = "<li><span class='opener' href='#'>TagList</span><ul id='tagList'><li>asdf</li></ul></li>";
-		$(TagList).appendTo("#userForm");		
+		getBlogs_Draft(userInfo.blogs);
+		getTag(userInfo.tags);
+		getCategory(userInfo.categories);
+		//$(CategoryList).appendTo("#userForm");
 	}
 }
 
 function getMessage(urlWanted){
-	//alert("getMessage");
 	console.log("entergetMessage");
 	console.log(urlWanted);
+	if (urlWanted == null || urlWanted == undefined)
+	{
+		alert("url null");
+		return false;
+	}
+		
 	var Message;
 	$.ajax({
 		async:false,
@@ -93,11 +108,10 @@ function getMessage(urlWanted){
 		url:urlWanted,//"https://blext.herokuapp.com/api/v1.0/blogs/",
 		dataType:"JSON",/*translate message get from sever into object */
 		success:function(data){
-			console.log("success");
 			Message = data;
 		},
-		error:function(){
-			alert("ERROR: " + data);
+		error:function(msg){
+			alert("ERROR: " + JSON.stringify(msg));
 		},
 		}).done(function(data){
 			console.log(JSON.stringify(Message));
@@ -105,40 +119,51 @@ function getMessage(urlWanted){
 		});
 	return Message;
 }
-function publishing(){
-	console.log("enterPublishing");
-	var url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/"
-	var Info = simplemde();
-	console.log(typeof Info);
-	$.ajax({
-		type:'POST',
-		data:Info,
-		url:url_publish,
-		headers:{
-				'Authorization': 'Basic ' + btoa(token+':')
-		},
-		success:function(result,status){
-			console.log("result:"+result);
-			console.log("status:"+status);
+function getBlogs_Draft(BlogsUrl){
+	Blogs = getMessage( BlogsUrl );
+	if (Blogs == null || Blogs == undefined || Blogs == false)
+	{
+		alert("No More");
+		return false;
+	}
+	var BlogsList = "";
+	var DraftList = "";
+	var i = 0;
+	for (i=0; Blogs.blogs[i] != null; i++)
+	{
+		if ( ! Blogs.blogs[i].draft )
+		{
+			console.log(Blogs.blogs[i].title);//the way to select blogs in Blogs is BlogsParsed.blogs[i].key, the later the former
+			BlogsList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[i].url)'>" + Blogs.blogs[i].title + "</a></li>" );
+			//onclick here to get a certain blog				
 		}
-		}).done(function (result,status){
-			alert("publishing done");
-			console.log("result:"+result);
-			console.log("status:"+status);
-	});
+		else
+		{
+			DraftList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[ i ].url)'>" + Blogs.blogs[i].title + "</a></li>");
+		}		
+	}
+	BlogsList += "<li><a href='#' onclick='getBlogs_Draft(Blogs.prev)'><i class='fa fa-angle-double-left'></i></a> <a href='#' onclick='getBlogs_Draft(Blogs.next)'><i class='fa fa-angle-double-right'></i></a></li>";
+	document.getElementById("BlogsList").innerHTML = BlogsList;//this will cover the form Login imformation innerHTML by function HomePage
+	
+	document.getElementById("DraftList").innerHTML = DraftList;
 }
-function HomePage(token){
-	if (token == null)//未认证，即第一次登陆时
+function getTag(TagUrl){
+	var Tags = getMessage( TagUrl );
+	var TagList = "";
+	for (i=0; Tags.tags[i] != null; i++)
 	{
-		var LoginHtml = "<li>Email:<input type='email' id='userEmail' placeholder='Enter email'> </li>";
-		LoginHtml += "<li>Password:<input type='password' id='userPassword' placeholder='Password'></li>";
-		LoginHtml += "<li><button type='button' onclick='userValidate()'>Sign in</button></li>";
-		document.getElementById('userForm').innerHTML = LoginHtml;
+		TagList += ("<li><a href='#' onclick='getABlog(BlogsParsed.blogs[" + i + "].url)'>" + Tags.tags[i].name + "</a></li>");
 	}
-	else
+	document.getElementById("TagList").innerHTML = TagList;
+}
+function getCategory(CategoryUrl){
+	var Categories = getMessage( CategoryUrl );
+	var CategoryList = "";
+	for (i=0; Categories.categories[i] != null; i++)
 	{
-		return true;
+		CategoryList += ("<li><a href='#' onclick='getABlog(BlogsParsed.blogs[" + i + "].url)'>" + Categories.categories[i].name + "</a></li>");
 	}
+	document.getElementById("CategoryList").innerHTML = CategoryList;
 }
 function newWin(url){
 	url += "?";
@@ -151,4 +176,9 @@ function newWin(url){
 		url += token;
 	}
 	window.open(url);
+}
+function getABlog(BlogUrl){
+	var ABlog = getMessage(BlogUrl);
+	simplemde.value(ABlog.body);
+	current_url = ABlog.url;
 }

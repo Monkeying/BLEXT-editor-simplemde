@@ -4,18 +4,25 @@
 <head>
     <title>BLEXT editor</title>
     <meta charset="utf-8" />
+	<script src="https://use.fontawesome.com/9a019accbd.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="static/css/simplemde.min.css" />
     <link rel="stylesheet" href="static/css/main.css" />
+	
 </head>
 
 <body>
 	<script>
 		var token = null;
 		window.onload = function(){
+		//first hide information of userList
+			document.getElementById('Blog_List').style.display = 'none';
+			document.getElementById('Tag_List').style.display = 'none';
+			document.getElementById('Draft_List').style.display = 'none';
+			document.getElementById('Category_List').style.display = 'none';		
+
 			var URL = location.href;
 			token = URL.split("?")[1];
-			alert(token);
 			if (token == "null")
 			{
 				token = null;
@@ -26,8 +33,9 @@
 			}
 	}
 	</script>
-    <textarea name="editor" id="editor"></textarea>
-    <div class="template">
+
+	<textarea name="editor" id="editor"></textarea>
+	<div class="template">
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="inner">
@@ -38,31 +46,30 @@
                     </header>
                     <ul class="sidebar-list">
                         <li id="HomePage">
-						<span class="opener" onclick="HomePage(token)">Homepage</span>
-							<ul id = 'userForm'> 
-								<li>
-								<span class="opener" >BlogList</span>
-									<ul id="blogList">
-									</ul>
-								</li>
-								<li>
-									<span class="opener" >BlogList</span>
-									<ul id="blogList1">
-									</ul>
-								</li>
+						<span class="opener" onclick="HomePage(token)" ><b>Homepage</b></span>
+							<ul id = 'Login' class="sidebar-list"> 
 							</ul>
 						</li>
-                        <li><a href="#" onclick="newWin('generic.html')">Generic</a></li>
-                        <li><a href="#" onclick="newWin('elements.html')" >Elements</a></li>
-                        <li>
-                            <span class="opener">Submenu</span>
-                            <ul id="test">
-                                <li><a href="#">Lorem Dolor</a></li>
-                                <li><a href="#">Ipsum Adipiscing</a></li>
-                                <li><a href="#">Tempus Magna</a></li>
-                                <li><a href="#">Feugiat Veroeros</a></li>
-                            </ul>
-                        </li>
+						<li id="Blog_List">
+							<span class="opener" >Blog_List</span>
+							<ul id = "BlogsList">
+							</ul>
+						</li>
+						<li id="Draft_List">
+							<span class="opener" >Draft_List</span>
+							<ul id="DraftList">
+							</ul>
+						</li>
+						<li id="Tag_List">
+							<span class="opener" >Tag_List</span>
+							<ul id="TagList">
+							</ul>
+						</li>
+						<li id="Category_List">
+							<span class="opener" >Category_List</span>
+							<ul id="CategoryList">
+							</ul>
+						</li>							
                     </ul>
                 </nav>
             </div>

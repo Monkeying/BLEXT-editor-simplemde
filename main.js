@@ -3,7 +3,6 @@ const electron = require('electron')
 const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
-
 const path = require('path')
 const url = require('url')
 
@@ -23,7 +22,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+//  mainWindow.webContents.openDevTools()----------------------------------------------------------this was what I changed
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -32,6 +31,9 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+  
+  //Whether to show menus bar which is at the top of the window
+ // mainWindow.setMenu(null)----------------------------------------------------------------------this was what I changed
 }
 
 // This method will be called when Electron has finished
