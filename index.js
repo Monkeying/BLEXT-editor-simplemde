@@ -79,8 +79,10 @@ function getUserInfoList(){
 		var Url = userInfo.url;
 		var username = userInfo.username;
 		
-		document.getElementById("Login").innerHTML = "<li>User: " + username + "</li><li>Blog_count: " + Blog_count + "</li><li><a href='index.html?' >Logout</a></li>";
-		
+		document.getElementById("userName").innerHTML = "<li>User: " + username + "</li><li>Blog_count: " + Blog_count + "</li><li><a href='index.html?' >Logout</a></li>";
+		document.getElementById("Login").style.display = "none";
+//		document.getElementById("HomePage").style.display = "none";
+
 		getBlogs_Draft(userInfo.blogs);
 		getTag(userInfo.tags);
 		getCategory(userInfo.categories);
@@ -138,17 +140,18 @@ function getBlogs_Draft(BlogsUrl){
 		if ( !Blogs.blogs[i].draft )
 		{	console.log(typeof Blogs.blogs[i].draft);
 			console.log(Blogs.blogs[i].title);//the way to select blogs in Blogs is BlogsParsed.blogs[i].key, the later the former
-			BlogsList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[i].url)'>" + Blogs.blogs[i].title + "</a></li>" );
+			BlogsList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[" + i + "].url)'>" + Blogs.blogs[i].title + "</a></li>" );
 			//onclick here to get a certain blog				
 		}
 		else
 		{
-			DraftList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[i].url)'>" + Blogs.blogs[i].title + "</a></li>");
+			DraftList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[" + i + "].url)'>" + Blogs.blogs[i].title + "</a></li>");
 		}		
 	}
 	console.log(Blogs.next);
 	BlogsList += "<li><a href='#' onclick='getBlogs_Draft(Blogs.prev)' style='float:left' class='icon fa-arrow-left'></a><a href='#' onclick='getBlogs_Draft(Blogs.next)' style='float:right' class='icon fa-arrow-right'></a></li>";
 	document.getElementById("BlogsList").innerHTML = BlogsList;//this will cover the form Login imformation innerHTML by function HomePage
+	console.log("BlogsList:"+BlogsList);
 	
 	document.getElementById("DraftList").innerHTML = DraftList;
 }

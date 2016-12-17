@@ -75,6 +75,45 @@ var simplemde = new SimpleMDE({
     	'side-by-side',
     	'|',
     	{
+    		name: "SaveToLocal",
+            action: function (editor){
+				//写入本地文件
+				var fs = require('fs');
+				var _path = dialog.showSaveDialog({filters: [{ name: '文本文档', extensions: ['txt', 'pdf'] },{ name: 'All Files', extensions: ['*'] }]});//dialog.showOpenDialog({ properties: [ 'openDirectory']});
+				if (_path == undefined)
+					return false;
+				console.log(_path);
+				fs.readFile(_path, 'utf8', function (err, data) {
+					if (err) return console.log(err);
+				});
+
+				fs.writeFile(_path, simplemde.value(), function (err) {
+				if (!err)
+				  console.log("写入成功！");
+				});
+			},
+            className: "fa fa-folder",
+            title: "Save on local Ctrl-S",
+    	},	
+    	{
+    		name: "ReadFromLocal",
+            action: function ReadFromLocal(editor){
+				//本地文件读入
+				var fs = require('fs');
+				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
+				if (_path == undefined)
+					return false;
+				//shell.showItemInFolder(path1);
+				fs.readFile(_path[0], 'utf8', function (err, data) {
+					if (err) return console.log(err);
+					simplemde.value(data);
+				});
+            },
+            className: "fa fa-folder-open-o",
+            title: "Read from local",
+    	},
+		'|',
+    	{
     		name: "SaveAsDraft",
             action: function SaveAsDraft(editor){
  				console.log("enterSaveDraft");
@@ -162,45 +201,7 @@ var simplemde = new SimpleMDE({
             },
             className: "fa fa-paper-plane",
             title: "Publish Ctrl-P",
-    	},
-    	{
-    		name: "SaveToLocal",
-            action: function (editor){
-				//写入本地文件
-				var fs = require('fs');
-				var _path = dialog.showSaveDialog({filters: [{ name: '文本文档', extensions: ['txt', 'pdf'] },{ name: 'All Files', extensions: ['*'] }]});//dialog.showOpenDialog({ properties: [ 'openDirectory']});
-				if (_path == undefined)
-					return false;
-				console.log(_path);
-				fs.readFile(_path, 'utf8', function (err, data) {
-					if (err) return console.log(err);
-				});
-
-				fs.writeFile(_path, simplemde.value(), function (err) {
-				if (!err)
-				  console.log("写入成功！");
-				});
-			},
-            className: "fa fa-folder",
-            title: "Save on local Ctrl-S",
     	},	
-    	{
-    		name: "ReadFromLocal",
-            action: function ReadFromLocal(editor){
-				//本地文件读入
-				var fs = require('fs');
-				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
-				if (_path == undefined)
-					return false;
-				//shell.showItemInFolder(path1);
-				fs.readFile(_path[0], 'utf8', function (err, data) {
-					if (err) return console.log(err);
-					simplemde.value(data);
-				});
-            },
-            className: "fa fa-folder-open-o",
-            title: "Read from local",
-    	}		
     ],
 });
 simplemde.toggleFullScreen();

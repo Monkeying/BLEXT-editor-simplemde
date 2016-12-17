@@ -22,7 +22,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-//  mainWindow.webContents.openDevTools()----------------------------------------------------------this was what I changed
+  mainWindow.webContents.openDevTools()//----------------------------------------------------------this was what I changed
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -33,7 +33,7 @@ function createWindow () {
   })
   
   //Whether to show menus bar which is at the top of the window
-  mainWindow.setMenu(null)//----------------------------------------------------------------------this was added by me
+//  mainWindow.setMenu(null)//----------------------------------------------------------------------this was added by me
 }
 
 // This method will be called when Electron has finished
