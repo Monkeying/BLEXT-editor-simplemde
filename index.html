@@ -4,7 +4,9 @@
 <head>
     <title>BLEXT editor</title>
     <meta charset="utf-8" />
+	
 	<script src="https://use.fontawesome.com/9a019accbd.js"></script>
+	
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="static/css/simplemde.min.css" />
     <link rel="stylesheet" href="static/css/main.css" />
@@ -23,13 +25,10 @@
 
 			var URL = location.href;
 			token = URL.split("?")[1];
-			if (token == "null")
+			console.log(token);
+			if ( !getUserInfoList() )
 			{
 				token = null;
-			}
-			else
-			{
-				getUserInfoList();
 			}
 	}
 	</script>
@@ -46,7 +45,7 @@
                     </header>
                     <ul class="sidebar-list">
                         <li id="HomePage">
-						<span class="opener" onclick="HomePage(token)" ><b>Homepage</b></span>
+						<span class="opener" onclick="HomePage()" ><b class='icon fa-home'> Homepage</b></span>
 							<ul id = 'Login' class="sidebar-list"> 
 							</ul>
 						</li>

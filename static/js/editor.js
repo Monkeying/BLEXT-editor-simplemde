@@ -1,4 +1,5 @@
 var SimpleMDE = require('simplemde');
+
 const electron = require('electron');
 var shell = electron.shell;
 const {dialog} = require('electron').remote
@@ -13,6 +14,7 @@ var simplemde = new SimpleMDE({
     element: $("#editor")[0],
     
     initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
+	toolbarTips: true,
     toolbar: [
     	{
 			name: "custom",
@@ -32,6 +34,26 @@ var simplemde = new SimpleMDE({
 			},
 			className: "fa fa-file-o",
 			title: "Reset Format"
+		},
+		{
+			name: "undo",
+			action: function undo(editor) {
+				var cm = editor.codemirror;
+				cm.undo();
+				cm.focus();
+			},
+			className: "fa fa-reply",
+			title: "Undo Ctrl-Z",
+		},
+		{
+			name: "redo",
+			action: function redo(editor) {
+				var cm = editor.codemirror;
+				cm.redo();
+				cm.focus();
+			},
+			className: "fa fa-share",
+			title: "Redo Ctrl-Y",
 		},
     	'|',
     	'bold',
@@ -53,16 +75,16 @@ var simplemde = new SimpleMDE({
     	'side-by-side',
     	'|',
     	{
-    		name: "save",
-            action: function customFunction(editor){
+    		name: "SaveAsDraft",
+            action: function SaveAsDraft(editor){
  				console.log("enterSaveDraft");
-				//var url_publish = "http://10.201.14.174:5000/api/v1.0/blogs/";
+				//var url_publish = "http://10.201.14.171:5000/api/v1.0/blogs/";
 				var url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
 				var request = {
 					body: simplemde.value(),
 					draft: true
-				}
-				request_json = JSON.stringify(request); 
+				};
+				var request_json = JSON.stringify(request); 
 				$.ajax({
 					type:'POST',
 					data: request_json,
@@ -73,39 +95,47 @@ var simplemde = new SimpleMDE({
 							'Authorization': 'Basic ' + btoa(token+':')
 					},
 					success:function(result,status){
+						console.log(request);
 						console.log("result:"+result);
 						console.log("status:"+status);
 					},
 					error:function(result,status){
 						console.log("result:"+JSON.stringify(result));
 						console.log("status:"+status);
+						if (result.status == 401)
+							alert("Have not Login");
 					}
 					}).done(function (result,status){
-						alert("publishing done");
+						alert("Sucessfully SaveAsDraft");
 						console.log("result:"+JSON.stringify(result));
 						console.log("status:"+status);
+						getUserInfoList();
 				});
             },
             className: "fa fa-save",
             title: "Save as draft",
     	},
     	{
-    		name: "custom",
-            action: function customFunction(editor){
+    		name: "Publish",
+            action: function Publish(editor){
 				console.log("enterPublishing");
 				//var url_publish = "http://10.201.14.174:5000/api/v1.0/blogs/";
-				var url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
+				var url_publish;
+				if (current_url != null)
+				{
+					if (window.confirm("Publish as a modified Blog?This will cover the former blog."))
+						url_publish = current_url;
+				}	
+				else
+					url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
 				
 				var request = {
 					body: simplemde.value(),
 					draft: false
-				};
-				var request_json = JSON.stringify(request); 
-				if (window.confirm("Publish as a draft?"))
-					request_json.draft = "true";
-				alert(request_json.draft);
+				}
+				request_json = JSON.stringify(request); 
 				$.ajax({
-					type:'POST',
+					type:current_url == null?'POST':'PUT',
 					data: request_json,
 					url:url_publish,
 					dataType:'json',
@@ -120,41 +150,43 @@ var simplemde = new SimpleMDE({
 					error:function(result,status){
 						console.log("result:"+JSON.stringify(result));
 						console.log("status:"+status);
+						if (result.status == 401)
+							alert("Have not Login");
 					}
 					}).done(function (result,status){
-						alert("publishing done");
+						alert("Sucessfully Publishing");
 						console.log("result:"+JSON.stringify(result));
 						console.log("status:"+status);
+						getUserInfoList();
 				});
             },
             className: "fa fa-paper-plane",
-            title: "Publish",
+            title: "Publish Ctrl-P",
     	},
     	{
-    		name: "custom",
-            action: function customFunction(editor){
+    		name: "SaveToLocal",
+            action: function (editor){
 				//写入本地文件
 				var fs = require('fs');
-				var _path = dialog.showOpenDialog({ properties: [ 'openDirectory' ]});
+				var _path = dialog.showSaveDialog({filters: [{ name: '文本文档', extensions: ['txt', 'pdf'] },{ name: 'All Files', extensions: ['*'] }]});//dialog.showOpenDialog({ properties: [ 'openDirectory']});
 				if (_path == undefined)
 					return false;
-				_path += "\\record.txt";
-				//shell.showItemInFolder(path1);
-				fs.readFile(_path[0], 'utf8', function (err, data) {
+				console.log(_path);
+				fs.readFile(_path, 'utf8', function (err, data) {
 					if (err) return console.log(err);
 				});
 
 				fs.writeFile(_path, simplemde.value(), function (err) {
 				if (!err)
 				  console.log("写入成功！");
-				})				
-            },
+				});
+			},
             className: "fa fa-folder",
-            title: "Save on local",
+            title: "Save on local Ctrl-S",
     	},	
     	{
-    		name: "custom",
-            action: function customFunction(editor){
+    		name: "ReadFromLocal",
+            action: function ReadFromLocal(editor){
 				//本地文件读入
 				var fs = require('fs');
 				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
@@ -165,11 +197,10 @@ var simplemde = new SimpleMDE({
 					if (err) return console.log(err);
 					simplemde.value(data);
 				});
-	
             },
             className: "fa fa-folder-open-o",
             title: "Read from local",
     	}		
-    ]
+    ],
 });
 simplemde.toggleFullScreen();
