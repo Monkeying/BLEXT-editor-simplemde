@@ -117,7 +117,8 @@ function getMessage(urlWanted){
 			return false;
 		},
 		}).done(function(data){
-			console.log(JSON.stringify(Message));
+			console.log("getMessage done");
+			//console.log(JSON.stringify(Message));
 		//$("#plainText").text(JSON.stringify(data));
 		});
 	return Message;
