@@ -39,9 +39,9 @@ function userValidate()//To get a token
 				withCredentials:true
 			},
 			headers:{
-					//'Authorization':'Basic ' +  btoa(userLoginInfo)
+					'Authorization':'Basic ' +  btoa(userLoginInfo)
 					//'Authorization':'Basic ' +  btoa('380554381@qq.com:cat')
-					'Authorization':'Basic ' +  btoa('1960547638@qq.com:1')
+					//'Authorization':'Basic ' +  btoa('1960547638@qq.com:1')
 			},
 			//url:"http://10.201.14.171:5000/api/v1.0/token",
 			url:"https://blext.herokuapp.com/api/v1.0/token",
