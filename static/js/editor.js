@@ -376,4 +376,4 @@ if (process.platform == 'darwin') {
 
 var menu = Menu.buildFromTemplate(template);
 //顶端菜单
-Menu.setApplicationMenu(menu);
+//Menu.setApplicationMenu(menu);

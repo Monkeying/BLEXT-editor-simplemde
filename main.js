@@ -31,7 +31,7 @@ function createWindow () {
   })
   
   //Whether to show menus bar which is at the top of the window
-//  mainWindow.setMenu(null)//----------------------------------------------------------------------this was added by me
+  mainWindow.setMenu(null)//----------------------------------------------------------------------this was added by me
 }
 
 // This method will be called when Electron has finished
