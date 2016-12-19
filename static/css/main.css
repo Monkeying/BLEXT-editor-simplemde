@@ -597,7 +597,7 @@
     }
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1366px) {
     .template .row > * {
         padding: 0 0 0 1.5em;
     }
@@ -1926,7 +1926,7 @@
     }
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1366px) {
     .template body,
     .template input,
     .template select,
@@ -3296,7 +3296,7 @@
     }
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1366px) {
     .template #main > .inner {
         padding: 0 4em 0.1em 4em;
     }
@@ -3480,7 +3480,7 @@
     }
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1366px) {
     .template #sidebar {
         box-shadow: 0 0 5em 0 rgba(0, 0, 0, 0.175);
         height: 100%;

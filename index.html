@@ -4,13 +4,10 @@
 <head>
     <title>BLEXT editor</title>
     <meta charset="utf-8" />
-	
 	<script src="https://use.fontawesome.com/9a019accbd.js"></script>
-	
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="static/css/simplemde.min.css" />
     <link rel="stylesheet" href="static/css/main.css" />
-	
 </head>
 
 <body>
@@ -30,9 +27,8 @@
 			{
 				token = null;
 			}
-	}
+	};	
 	</script>
-
 	<textarea name="editor" id="editor"></textarea>
 	<div class="template">
         <!-- Sidebar -->
@@ -40,8 +36,8 @@
             <div class="inner">
                 <!-- Menu -->
                 <nav id="menu" class="sidebar jsc-sidebar">
-                    <header class="major">
-                        <h2>Menu</h2>
+                    <header id="Menu" class="major">
+                        <h2 >Menu</h2>
                     </header>
 					<div>
 						<div style="float:left">
@@ -52,7 +48,7 @@
 					</div>
                     <ul class="sidebar-list">
                         <li id="HomePage">
-						<span class="opener" onclick="HomePage()" ><b class='icon fa-home'> Homepage</b></span>
+						<span class="opener" onclick="HomePage()" ><b class='icon fa-home'> Home</b></span>
 							<ul id = 'Login' class="sidebar-list"> 
 							</ul>
 						</li>

@@ -1,11 +1,12 @@
 var userInfo;
 var current_url = null;
 var Blogs = null;
+
 function HomePage(){//token was grobaly defined in index.html
 	if (token == null)//未认证，即第一次登陆时
 	{
 		var LoginHtml = "<li style='text-align:center'>Email:<input type='email' id='userEmail' placeholder='Enter email'> </li>";
-		LoginHtml += "<li style='text-align:center'>Password:<input type='password' id='userPassword' placeholder='Password'></li>";
+		LoginHtml += "<li style='text-align:center'>Password:<input type='password' id='userPassword' placeholder='Enter Password'></li>";
 		LoginHtml += "<li align='center'><button type='button' onclick='userValidate()'>Sign in</button></li>";//click this button will lead to function userValidate
 		document.getElementById('Login').innerHTML = LoginHtml;
 	}
@@ -56,6 +57,7 @@ function userValidate()//To get a token
 			},
 			error:function(){
 				token = null;
+				alert("UnAuthorized");
 				HomePage();
 				console.log("userValidate error");
 			}
@@ -79,6 +81,7 @@ function getUserInfoList(){
 		var Url = userInfo.url;
 		var username = userInfo.username;
 		
+		document.getElementById("Menu").innerHTML = "<li>" + username + "'s blog</li>";
 		document.getElementById("userName").innerHTML = "<li>User: " + username + "</li><li>Blog_count: " + Blog_count + "</li><li><a href='index.html?' >Logout</a></li>";
 		document.getElementById("Login").style.display = "none";
 //		document.getElementById("HomePage").style.display = "none";
@@ -93,7 +96,7 @@ function getUserInfoList(){
 function getMessage(urlWanted){
 	console.log("entergetMessage");
 	console.log(urlWanted);
-	if (urlWanted == null || urlWanted == undefined)
+	if (urlWanted == null || urlWanted == undefined || token == null)
 	{
 		console.log("url null");
 		return false;
@@ -115,6 +118,11 @@ function getMessage(urlWanted){
 			Message = data;
 		},
 		error:function(msg){
+			if (msg.status == 401)
+			{
+				Message = false;
+				return false;
+			}
 			alert("ERROR: " + JSON.stringify(msg));
 			return false;
 		},
@@ -190,3 +198,7 @@ function getABlog(BlogUrl){
 	simplemde.value(ABlog.body);
 	current_url = ABlog.url;
 }
+window.onbeforeunload = function(e){
+	//if ( window.confirm("Do you want to save this draft until nextTime?") )
+		simplemde.value('---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->');
+};

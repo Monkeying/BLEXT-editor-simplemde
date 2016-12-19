@@ -1,9 +1,9 @@
 var SimpleMDE = require('simplemde');
 
 const electron = require('electron');
-var shell = electron.shell;
 const {dialog} = require('electron').remote
 console.log(dialog)
+
 var simplemde = new SimpleMDE({ 
 	autofocus: true,
     autosave: {
@@ -15,6 +15,7 @@ var simplemde = new SimpleMDE({
     
     initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
 	toolbarTips: true,
+//	hideIcons: ["fullscreen"],
     toolbar: [
     	{
 			name: "custom",
@@ -103,7 +104,6 @@ var simplemde = new SimpleMDE({
 				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
 				if (_path == undefined)
 					return false;
-				//shell.showItemInFolder(path1);
 				fs.readFile(_path[0], 'utf8', function (err, data) {
 					if (err) return console.log(err);
 					simplemde.value(data);
@@ -118,6 +118,11 @@ var simplemde = new SimpleMDE({
             action: function SaveAsDraft(editor){
  				console.log("enterSaveDraft");
 				//var url_publish = "http://10.201.14.171:5000/api/v1.0/blogs/";
+				if (token == null)
+				{
+					alert("Have not Login");
+					return false;
+				};
 				var url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
 				var request = {
 					body: simplemde.value(),
@@ -160,6 +165,11 @@ var simplemde = new SimpleMDE({
 				console.log("enterPublishing");
 				//var url_publish = "http://10.201.14.174:5000/api/v1.0/blogs/";
 				var url_publish;
+				if (token == null)
+				{
+					alert("Have not Login");
+					return false;
+				};					
 				if (current_url != null)
 				{
 					if (window.confirm("Publish as a modified Blog?This will cover the former blog."))
@@ -201,7 +211,170 @@ var simplemde = new SimpleMDE({
             },
             className: "fa fa-paper-plane",
             title: "Publish Ctrl-P",
-    	},	
+    	},
+		'fullscreen',
     ],
 });
-simplemde.toggleFullScreen();
+//simplemde.toggleFullScreen();
+
+const remote = electron.remote;
+const Menu = remote.Menu;
+const MenuItem = remote.MenuItem;
+
+//右键菜单
+
+window.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+  menu.popup(remote.getCurrentWindow());
+}, false);
+
+var template = [
+  {
+    label: 'Edit',
+    submenu: [
+      {
+        label: 'Cut',
+        accelerator: 'CmdOrCtrl+X',
+        role: 'cut'
+      },
+      {
+        label: 'Copy',
+        accelerator: 'CmdOrCtrl+C',
+        role: 'copy'
+      },
+      {
+        label: 'Paste',
+        accelerator: 'CmdOrCtrl+V',
+        role: 'paste'
+      },
+    ]
+  },
+  {
+    label: 'View',
+    submenu: [
+      {
+        label: 'Reload',
+        accelerator: 'CmdOrCtrl+R',
+        click: function(item, focusedWindow) {
+          if (focusedWindow)
+            focusedWindow.reload();
+        }
+      },
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: (function() {
+          if (process.platform == 'darwin')
+            return 'Alt+Command+I';
+          else
+            return 'Ctrl+Shift+I';
+        })(),
+        click: function(item, focusedWindow) {
+          if (focusedWindow)
+            focusedWindow.toggleDevTools();
+        }
+      },
+    ]
+  },
+  {
+    label: 'Window',
+    role: 'window',
+    submenu: [
+      {
+        label: 'Minimize',
+        accelerator: 'CmdOrCtrl+M',
+        role: 'minimize'
+      },
+      {
+        label: 'FullScreen',
+        accelerator: (function() {
+          if (process.platform == 'darwin')
+            return 'Ctrl+Command+F';
+          else
+            return 'F11';
+        })(),
+        click: function() {
+          SimpleMDE.toggleFullScreen(simplemde);
+        }
+      },
+      {
+        label: 'Close',
+        accelerator: 'CmdOrCtrl+W',
+        role: 'close'
+      },
+    ]
+  },
+  {
+    label: 'Help',
+    role: 'help',
+    submenu: [
+      {
+        label: 'Learn More about Local',
+        click: function() { require('electron').shell.openExternal('https://github.com/Monkeying/BLEXT-editor-simplemde') }
+      },
+      {
+        label: 'Learn More about Remote',
+        click: function() { require('electron').shell.openExternal('https://github.com/seagullbird/BLEXT') }
+      },
+    ]
+  },
+];
+
+if (process.platform == 'darwin') {
+  var name = require('electron').remote.app.getName();
+  template.unshift({
+    label: name,
+    submenu: [
+      {
+        label: 'About ' + name,
+        role: 'about'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Services',
+        role: 'services',
+        submenu: []
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Hide ' + name,
+        accelerator: 'Command+H',
+        role: 'hide'
+      },
+      {
+        label: 'Hide Others',
+        accelerator: 'Command+Alt+H',
+        role: 'hideothers'
+      },
+      {
+        label: 'Show All',
+        role: 'unhide'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Quit',
+        accelerator: 'Command+Q',
+        click: function() { app.quit(); }
+      },
+    ]
+  });
+  // Window menu.
+  template[3].submenu.push(
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Bring All to Front',
+      role: 'front'
+    }
+  );
+}
+
+var menu = Menu.buildFromTemplate(template);
+//顶端菜单
+Menu.setApplicationMenu(menu);
