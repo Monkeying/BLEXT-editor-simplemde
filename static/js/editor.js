@@ -212,10 +212,9 @@ var simplemde = new SimpleMDE({
             className: "fa fa-paper-plane",
             title: "Publish Ctrl-P",
     	},
-		'fullscreen',
     ],
 });
-//simplemde.toggleFullScreen();
+simplemde.toggleFullScreen();
 
 const remote = electron.remote;
 const Menu = remote.Menu;
