@@ -1,20 +1,34 @@
 var userInfo;
 var current_url = null;
 var Blogs = null;
+let token = null;
 
+window.onload = function(){
+//first hide information of userList
+	document.getElementById('Blog_List').style.display = 'none';
+	document.getElementById('Tag_List').style.display = 'none';
+	document.getElementById('Draft_List').style.display = 'none';
+	document.getElementById('Category_List').style.display = 'none';
+	
+//if token was sent by url, login direcrly	
+	var URL = location.href;
+	token = URL.split("?")[1];
+	if ( !getUserInfoList() )
+		token = null;
+};
+//HomePage onclick fucntion
 function HomePage(){//token was grobaly defined in index.html
-	if (token == null)//未认证，即第一次登陆时
+	if (token == null)//unauthorized, userEmail and Password are needed
 	{
-		var LoginHtml = "<li style='text-align:center'>Email:<input type='email' id='userEmail' placeholder='Enter email'> </li>";
-		LoginHtml += "<li style='text-align:center'>Password:<input type='password' id='userPassword' placeholder='Enter Password'></li>";
+		var LoginHtml = "<li style='text-align:center'>Email<input type='email' id='userEmail' placeholder='Enter email'> </li>";
+		LoginHtml += "<li style='text-align:center'>Password<input type='password' id='userPassword' placeholder='Enter Password'></li>";
 		LoginHtml += "<li align='center'><button type='button' onclick='userValidate()'>Sign in</button></li>";//click this button will lead to function userValidate
 		document.getElementById('Login').innerHTML = LoginHtml;
 	}
 	else
-	{
 		return true;
-	}
 }
+//Validate Email and Password inputed with remote server via ajax get
 function userValidate()//To get a token
 {
 	console.log("enter userValidate");
@@ -32,7 +46,6 @@ function userValidate()//To get a token
 
 		var userLoginInfo = document.getElementById("userEmail").value + ":" + document.getElementById("userPassword").value;	
 		$.ajax({
-			//async:false,
 			beforeSend:function(){
 				document.getElementById("Login").innerHTML = "<li align='center'>waiting for validation</li><li align='center'><i class='icon fa-spinner fa-pulse' ></i><i class='icon fa-spinner fa-pulse' ></i><i class='icon fa-spinner fa-pulse' ></i></li>";
 			},
@@ -41,28 +54,31 @@ function userValidate()//To get a token
 			},
 			headers:{
 					'Authorization':'Basic ' +  btoa(userLoginInfo)
-					//'Authorization':'Basic ' +  btoa('380554381@qq.com:cat')
-					//'Authorization':'Basic ' +  btoa('1960547638@qq.com:1')
 			},
-			//url:"http://10.201.14.171:5000/api/v1.0/token",
 			url:"https://blext.herokuapp.com/api/v1.0/token",
-			dataType:"JSON",/*translate message get from sever into object */
+			dataType:"JSON",
 			success:function(data){
 				token = data.token;
-				//document.getElementById('Login').style.display = 'none';
+				//store token grobaly
+				//display BlogInfoList which were hidden when unauthorized
 				document.getElementById('Blog_List').style.display = '';
 				document.getElementById('Draft_List').style.display = '';
 				document.getElementById('Tag_List').style.display = '';
 				document.getElementById('Category_List').style.display = '';
+				document.getElementById('HomePage').style.display = 'none';
+				
 			},
 			error:function(){
 				token = null;
 				alert("UnAuthorized");
+				//Validation failed return to Login Form
 				HomePage();
 				console.log("userValidate error");
 			}
 			}).done(function(data){
 				console.log("done userValidate");
+
+				//since authorization done, get userBlogInfo
 				getUserInfoList();
 			});
 	}
@@ -72,7 +88,7 @@ function getUserInfoList(){
 		return false;
 	else
 	{
-		//userInfo = getMessage("http://10.201.14.171:5000/api/v1.0/user/");
+		//get userInfo and url for BlogContent
 		userInfo = getMessage("https://blext.herokuapp.com/api/v1.0/user/");
 		if (userInfo == false)
 			return false;
@@ -81,18 +97,16 @@ function getUserInfoList(){
 		var Url = userInfo.url;
 		var username = userInfo.username;
 		
-		document.getElementById("Menu").innerHTML = "<li>" + username + "'s blog</li>";
-		document.getElementById("userName").innerHTML = "<li>User: " + username + "</li><li>Blog_count: " + Blog_count + "</li><li><a href='index.html?' >Logout</a></li>";
+		document.getElementById("Menu").innerHTML = "<li><b>"+ username + "'s blog</b><a href='index.html?' float:right>Logout</a></li>";
 		document.getElementById("Login").style.display = "none";
-//		document.getElementById("HomePage").style.display = "none";
 
+		//get Blog Content
 		getBlogs_Draft(userInfo.blogs);
 		getTag(userInfo.tags);
 		getCategory(userInfo.categories);
-		//$(CategoryList).appendTo("#userForm");
 	}
 }
-
+//get json data via ajax with url given
 function getMessage(urlWanted){
 	console.log("entergetMessage");
 	console.log(urlWanted);
@@ -111,9 +125,8 @@ function getMessage(urlWanted){
 		headers:{
 				'Authorization': 'Basic ' + btoa(token+':')
 		},
-		//url:"http://10.201.14.171:5000/api/v1.0/user/",
-		url:urlWanted,//"https://blext.herokuapp.com/api/v1.0/blogs/",
-		dataType:"JSON",/*translate message get from sever into object */
+		url:urlWanted,
+		dataType:"JSON",
 		success:function(data){
 			Message = data;
 		},
@@ -128,11 +141,11 @@ function getMessage(urlWanted){
 		},
 		}).done(function(data){
 			console.log("getMessage done");
-			//console.log(JSON.stringify(Message));
-		//$("#plainText").text(JSON.stringify(data));
 		});
+	//if success return Message in json type, else Message is false
 	return Message;
 }
+//get Blogs and Draft via ajax with url ~/blogs, each Blog and Draft is marked with title and url
 function getBlogs_Draft(BlogsUrl){
 	Blogs = getMessage( BlogsUrl );
 	if (Blogs == null || Blogs == undefined || Blogs == false)
@@ -140,65 +153,59 @@ function getBlogs_Draft(BlogsUrl){
 		alert("No More");
 		return false;
 	}
-	var BlogsList = "";
-	var DraftList = "";
-	var i = 0;
-	for (i=0; Blogs.blogs[i] != null; i++)
+	var BlogsList = "", DraftList = "";
+	for (var i=0; Blogs.blogs[i] != null; i++)
 	{
 		if ( !Blogs.blogs[i].draft )
-		{	console.log(typeof Blogs.blogs[i].draft);
+		{	
 			console.log(Blogs.blogs[i].title);//the way to select blogs in Blogs is BlogsParsed.blogs[i].key, the later the former
 			BlogsList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[" + i + "].url)'>" + Blogs.blogs[i].title + "</a></li>" );
-			//onclick here to get a certain blog				
+			//onclick to get a certain blog	via ajax			
 		}
 		else
-		{
-			DraftList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[" + i + "].url)'>" + Blogs.blogs[i].title + "</a></li>");
-		}		
+			DraftList += ("<li><a href='#' onclick='getABlog(Blogs.blogs[" + i + "].url)'>" + Blogs.blogs[i].title + "</a></li>")
 	}
-	console.log(Blogs.next);
+	//apending prev/next page Info
 	BlogsList += "<li><a href='#' onclick='getBlogs_Draft(Blogs.prev)' style='float:left' class='icon fa-arrow-left'></a><a href='#' onclick='getBlogs_Draft(Blogs.next)' style='float:right' class='icon fa-arrow-right'></a></li>";
 	document.getElementById("BlogsList").innerHTML = BlogsList;//this will cover the form Login imformation innerHTML by function HomePage
-	console.log("BlogsList:"+BlogsList);
 	
 	document.getElementById("DraftList").innerHTML = DraftList;
 }
 function getTag(TagUrl){
 	var Tags = getMessage( TagUrl );
 	var TagList = "";
-	for (i=0; Tags.tags[i] != null; i++)
-	{
-		TagList += ("<li><a href='#' onclick='getABlog(BlogsParsed.blogs[" + i + "].url)'>" + Tags.tags[i].name + "</a></li>");
-	}
+	for (var i=0; Tags.tags[i] != null; i++)
+		TagList += ("<li><a href='#'>" + Tags.tags[i].name + "</a></li>");
+	
 	document.getElementById("TagList").innerHTML = TagList;
 }
 function getCategory(CategoryUrl){
 	var Categories = getMessage( CategoryUrl );
 	var CategoryList = "";
-	for (i=0; Categories.categories[i] != null; i++)
-	{
-		CategoryList += ("<li><a href='#' onclick='getABlog(BlogsParsed.blogs[" + i + "].url)'>" + Categories.categories[i].name + "</a></li>");
-	}
+	for (var i=0; Categories.categories[i] != null; i++)
+		CategoryList += ("<li><a href='#'>" + Categories.categories[i].name + "</a></li>");
+	
 	document.getElementById("CategoryList").innerHTML = CategoryList;
 }
-function newWin(url){
-	url += "?";
-	if (token == null)
-	{
-		 url += "null";
-	}
-	else
-	{
-		url += token;
-	}
-	window.open(url);
-}
+//using function getMessage to get a single blog content via ajax, set simplemde.value and current_url to this blog
 function getABlog(BlogUrl){
 	var ABlog = getMessage(BlogUrl);
 	simplemde.value(ABlog.body);
 	current_url = ABlog.url;
 }
-window.onbeforeunload = function(e){
-	//if ( window.confirm("Do you want to save this draft until nextTime?") )
+//when opening a new window associating with this window, appending token info via url
+function newWin(url){
+	url += "?";
+	if (token == null)
+		 url += "null";
+	else
+		url += token;
+	window.open(url);
+}
+//clean simplemde.value before window close
+window.onbeforeunload = function(){
+	if (simplemde.value() == '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->' || simplemde.value() == "")
+		return ;
+	if ( ! window.confirm("Save this content until your next open?") )
 		simplemde.value('---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->');
 };

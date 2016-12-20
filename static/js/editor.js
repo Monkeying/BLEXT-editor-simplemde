@@ -1,8 +1,7 @@
 var SimpleMDE = require('simplemde');
 
 const electron = require('electron');
-const {dialog} = require('electron').remote
-console.log(dialog)
+const {dialog} = electron.remote
 
 var simplemde = new SimpleMDE({ 
 	autofocus: true,
@@ -15,8 +14,8 @@ var simplemde = new SimpleMDE({
     
     initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
 	toolbarTips: true,
-//	hideIcons: ["fullscreen"],
     toolbar: [
+	//sidebarTrigger
     	{
 			name: "custom",
 	        action: function customFunction(editor){
@@ -26,6 +25,7 @@ var simplemde = new SimpleMDE({
 	        title: "Custom Button",
     	},
 		'|',
+	//Reset Format
 		{
 			name: "custom",
 			action: function setFormat(){
@@ -36,6 +36,7 @@ var simplemde = new SimpleMDE({
 			className: "fa fa-file-o",
 			title: "Reset Format"
 		},
+	//undo
 		{
 			name: "undo",
 			action: function undo(editor) {
@@ -46,6 +47,7 @@ var simplemde = new SimpleMDE({
 			className: "fa fa-reply",
 			title: "Undo Ctrl-Z",
 		},
+	//redo
 		{
 			name: "redo",
 			action: function redo(editor) {
@@ -75,12 +77,29 @@ var simplemde = new SimpleMDE({
     	'preview',
     	'side-by-side',
     	'|',
+	//Open File using dialog
+    	{
+    		name: "OpenFile",
+            action: function ReadFromLocal(editor){//本地文件读入
+				var fs = require('fs');
+				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
+				if (_path == undefined)
+					return false;
+				fs.readFile(_path[0], 'utf8', function (err, data) {
+					if (err) return console.log(err);
+					simplemde.value(data);
+				});
+            },
+            className: "fa fa-folder-open-o",
+            title: "Open File",
+    	},
+	//SaveToLocal using dialog
     	{
     		name: "SaveToLocal",
-            action: function (editor){
-				//写入本地文件
+            action: function (editor){//写入本地文件
 				var fs = require('fs');
-				var _path = dialog.showSaveDialog({filters: [{ name: '文本文档', extensions: ['txt', 'pdf'] },{ name: 'All Files', extensions: ['*'] }]});//dialog.showOpenDialog({ properties: [ 'openDirectory']});
+				var _path = dialog.showSaveDialog({filters: [{ name: '文本文档', extensions: ['txt', 'pdf'] },{ name: 'All Files', extensions: ['*'] }]});
+				//dialog.showOpenDialog({ properties: [ 'openDirectory']}); only txt pdf are showing
 				if (_path == undefined)
 					return false;
 				console.log(_path);
@@ -96,23 +115,8 @@ var simplemde = new SimpleMDE({
             className: "fa fa-folder",
             title: "Save on local Ctrl-S",
     	},	
-    	{
-    		name: "ReadFromLocal",
-            action: function ReadFromLocal(editor){
-				//本地文件读入
-				var fs = require('fs');
-				var _path = dialog.showOpenDialog({ properties: [ 'openFile' ]});
-				if (_path == undefined)
-					return false;
-				fs.readFile(_path[0], 'utf8', function (err, data) {
-					if (err) return console.log(err);
-					simplemde.value(data);
-				});
-            },
-            className: "fa fa-folder-open-o",
-            title: "Read from local",
-    	},
 		'|',
+	//SaveAsDraft using ajax Post json
     	{
     		name: "SaveAsDraft",
             action: function SaveAsDraft(editor){
@@ -140,8 +144,6 @@ var simplemde = new SimpleMDE({
 					},
 					success:function(result,status){
 						console.log(request);
-						console.log("result:"+result);
-						console.log("status:"+status);
 					},
 					error:function(result,status){
 						console.log("result:"+JSON.stringify(result));
@@ -159,6 +161,7 @@ var simplemde = new SimpleMDE({
             className: "fa fa-save",
             title: "Save as draft",
     	},
+	//Publish using ajax post/get(publish new/modify exist) json
     	{
     		name: "Publish",
             action: function Publish(editor){
@@ -171,10 +174,8 @@ var simplemde = new SimpleMDE({
 					return false;
 				};					
 				if (current_url != null)
-				{
 					if (window.confirm("Publish as a modified Blog?This will cover the former blog."))
 						url_publish = current_url;
-				}	
 				else
 					url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
 				
@@ -210,22 +211,18 @@ var simplemde = new SimpleMDE({
 				});
             },
             className: "fa fa-paper-plane",
-            title: "Publish Ctrl-P",
+            title: "Publish Ctrl-Shift-P",
     	},
     ],
 });
+//simplemde initializing
+
+//turn it in to fullScreen at the beginning
 simplemde.toggleFullScreen();
 
 const remote = electron.remote;
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
-
-//右键菜单
-
-window.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
-  menu.popup(remote.getCurrentWindow());
-}, false);
 
 var template = [
   {
@@ -291,8 +288,9 @@ var template = [
           else
             return 'F11';
         })(),
-        click: function() {
-          SimpleMDE.toggleFullScreen(simplemde);
+        click: function(item, focusedWindow) {
+          if (focusedWindow)
+            focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
         }
       },
       {
@@ -318,7 +316,7 @@ var template = [
   },
 ];
 
-if (process.platform == 'darwin') {
+if (process.platform == 'darwin') {//MAC
   var name = require('electron').remote.app.getName();
   template.unshift({
     label: name,
@@ -373,7 +371,11 @@ if (process.platform == 'darwin') {
     }
   );
 }
-
 var menu = Menu.buildFromTemplate(template);
+//右键菜单
+window.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+  menu.popup(remote.getCurrentWindow());
+}, false);
 //顶端菜单
 //Menu.setApplicationMenu(menu);

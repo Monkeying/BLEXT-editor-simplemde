@@ -11,24 +11,6 @@
 </head>
 
 <body>
-	<script>
-		var token = null;
-		window.onload = function(){
-		//first hide information of userList
-			document.getElementById('Blog_List').style.display = 'none';
-			document.getElementById('Tag_List').style.display = 'none';
-			document.getElementById('Draft_List').style.display = 'none';
-			document.getElementById('Category_List').style.display = 'none';		
-
-			var URL = location.href;
-			token = URL.split("?")[1];
-			console.log(token);
-			if ( !getUserInfoList() )
-			{
-				token = null;
-			}
-	};	
-	</script>
 	<textarea name="editor" id="editor"></textarea>
 	<div class="template">
         <!-- Sidebar -->
@@ -39,16 +21,9 @@
                     <header id="Menu" class="major">
                         <h2 >Menu</h2>
                     </header>
-					<div>
-						<div style="float:left">
-						<img src="user.png" ></img>
-						</div>
-						<div id="userName">
-						</div>
-					</div>
                     <ul class="sidebar-list">
                         <li id="HomePage">
-						<span class="opener" onclick="HomePage()" ><b class='icon fa-home'> Home</b></span>
+						<span class="opener" onclick="HomePage()" ><b class='icon fa-home'>Home</b></span>
 							<ul id = 'Login' class="sidebar-list"> 
 							</ul>
 						</li>
