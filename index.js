@@ -17,10 +17,10 @@ window.onload = function(){
 		token = null;
 };
 //HomePage onclick fucntion
-function HomePage(){//token was grobaly defined in index.html
+function homePage(){//token was grobaly defined in index.html
 	if (token == null)//unauthorized, userEmail and Password are needed
 	{
-		var LoginHtml = "<li style='text-align:center'>Email<input type='email' id='userEmail' placeholder='Enter email'> </li>";
+		var LoginHtml = "<li style='text-align:center'>Email<input type='email' id='userEmail' placeholder='Enter Email'> </li>";
 		LoginHtml += "<li style='text-align:center'>Password<input type='password' id='userPassword' placeholder='Enter Password'></li>";
 		LoginHtml += "<li align='center'><button type='button' onclick='userValidate()'>Sign in</button></li>";//click this button will lead to function userValidate
 		document.getElementById('Login').innerHTML = LoginHtml;

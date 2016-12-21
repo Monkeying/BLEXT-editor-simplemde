@@ -14,6 +14,7 @@ var simplemde = new SimpleMDE({
     
     initialValue: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
 	toolbarTips: true,
+	spellChecker: false,
     toolbar: [
 	//sidebarTrigger
     	{
@@ -167,6 +168,7 @@ var simplemde = new SimpleMDE({
             action: function Publish(editor){
 				console.log("enterPublishing");
 				//var url_publish = "http://10.201.14.174:5000/api/v1.0/blogs/";
+//choose proper publish url
 				var url_publish;
 				if (token == null)
 				{
@@ -174,16 +176,28 @@ var simplemde = new SimpleMDE({
 					return false;
 				};					
 				if (current_url != null)
+				{
 					if (window.confirm("Publish as a modified Blog?This will cover the former blog."))
-						url_publish = current_url;
+						url_publish = current_url;					
+				}
 				else
 					url_publish = "https://blext.herokuapp.com/api/v1.0/blogs/";
+//validate title inputed				
+				var title = simplemde.value().split("title:")[1];
+				title = title.split("\n")[0];
+				var regu = "^[ ]+$";
+				var re = new RegExp(regu);//judge whether title is space 
+				if ( re.test(title) || title == "")
+				{
+					alert("Title should not be null.");
+					return ;
+				}				
 				
 				var request = {
 					body: simplemde.value(),
 					draft: false
-				}
-				request_json = JSON.stringify(request); 
+				};
+				var request_json = JSON.stringify(request); 
 				$.ajax({
 					type:current_url == null?'POST':'PUT',
 					data: request_json,
@@ -202,7 +216,7 @@ var simplemde = new SimpleMDE({
 						console.log("status:"+status);
 						if (result.status == 401)
 							alert("Have not Login");
-					}
+					},
 					}).done(function (result,status){
 						alert("Sucessfully Publishing");
 						console.log("result:"+JSON.stringify(result));
@@ -286,7 +300,7 @@ var template = [
           if (process.platform == 'darwin')
             return 'Ctrl+Command+F';
           else
-            return 'F11';
+            return '';
         })(),
         click: function(item, focusedWindow) {
           if (focusedWindow)
